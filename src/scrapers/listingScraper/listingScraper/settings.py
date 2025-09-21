@@ -18,11 +18,11 @@ ADDONS = {}
 # Only show WARNING+ for Scrapy internals
 import logging
 
-LOG_LEVEL = 'WARNING'  # suppress INFO/DEBUG from Scrapy core
+#LOG_LEVEL = 'WARNING'  # suppress INFO/DEBUG from Scrapy core
 
 # Keep your spider logger visible
-logging.getLogger('scrapy').setLevel(logging.WARNING)
-logging.getLogger('twisted').setLevel(logging.WARNING)
+#logging.getLogger('scrapy').setLevel(logging.WARNING)
+#logging.getLogger('twisted').setLevel(logging.WARNING)
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

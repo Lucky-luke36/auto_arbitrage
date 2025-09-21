@@ -1,3 +1,5 @@
+
+
 # Scrapy settings for listingScraper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -8,11 +10,19 @@
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 BOT_NAME = "listingScraper"
-
 SPIDER_MODULES = ["listingScraper.spiders"]
 NEWSPIDER_MODULE = "listingScraper.spiders"
 
 ADDONS = {}
+
+# Only show WARNING+ for Scrapy internals
+import logging
+
+LOG_LEVEL = 'WARNING'  # suppress INFO/DEBUG from Scrapy core
+
+# Keep your spider logger visible
+logging.getLogger('scrapy').setLevel(logging.WARNING)
+logging.getLogger('twisted').setLevel(logging.WARNING)
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

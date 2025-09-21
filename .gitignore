@@ -1,0 +1,10 @@
+# Python
+venv/
+/src/scrapers/autoScraper
+__pycache__/
+*.pyc
+*.pyo
+
+# VS Code
+.vscode/
+*.code-workspace

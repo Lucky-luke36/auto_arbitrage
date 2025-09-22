@@ -8,17 +8,6 @@ def process_titles():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Add manual_review column if missing
-    try:
-        cursor.execute("""
-            ALTER TABLE cars
-            ADD COLUMN manual_review INTEGER DEFAULT 0
-        """)
-        conn.commit()
-    except sqlite3.OperationalError:
-        # Column already exists
-        pass
-
     # Select rows without a make
     cursor.execute("""
         SELECT id, title

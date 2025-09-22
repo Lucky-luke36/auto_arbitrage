@@ -34,7 +34,7 @@ ROBOTSTXT_OBEY = False
 # Concurrency and throttling settings
 #CONCURRENT_REQUESTS = 16
 CONCURRENT_REQUESTS_PER_DOMAIN = 1
-DOWNLOAD_DELAY = 2
+DOWNLOAD_DELAY = 3
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
@@ -68,9 +68,9 @@ DOWNLOAD_DELAY = 2
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "listingScraper.pipelines.ListingscraperPipeline": 300,
-#}
+ITEM_PIPELINES = {
+   "listingScraper.pipelines.SQLitePipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

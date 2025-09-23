@@ -7,7 +7,7 @@ class GratkaSpider(scrapy.Spider):
     allowed_domains = ["gratka.pl", "www.gratka.pl"]
     start_urls = [
         f"https://gratka.pl/motoryzacja?page={i}"
-        for i in range(1, 3)  # scrape pages 1 and 2
+        for i in range(1, 313)  # scrape pages 1 and 2
     ]
 
     def parse(self, response):
@@ -64,7 +64,7 @@ class GratkaSpider(scrapy.Spider):
             "transmission": transmission,
             "fuelType": fuelType,
             #"vin": vin,
-            "source": "gratka.pl",
+            "source": "gratka",
             "link": response.url,
             "scraped_at": datetime.utcnow().isoformat(),
             "manual_review": 0,

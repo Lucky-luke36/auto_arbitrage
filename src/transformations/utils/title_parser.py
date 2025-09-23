@@ -3,7 +3,7 @@ import json
 import os
 
 # Load makes/models once at import time
-MAKES_JSON_PATH = os.path.join(os.path.dirname(__file__), "../../makes_models.json")
+MAKES_JSON_PATH = os.path.join(os.path.dirname(__file__), "..\..\lookups\makes_models.json")
 with open(MAKES_JSON_PATH, "r", encoding="utf-8") as f:
     MAKES_MODELS = json.load(f)
 

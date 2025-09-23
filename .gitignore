@@ -12,3 +12,7 @@ __pycache__/
 #Databsase
 *.sqlite3
 *.db
+
+#Models
+*.pkl
+*.joblib

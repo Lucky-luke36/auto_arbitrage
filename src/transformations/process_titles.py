@@ -1,7 +1,7 @@
 import sqlite3
 from utils.title_parser import parse_title
 
-DB_PATH = r"C:\Users\lukas\Documents\Car_Arbitrage\src\scrapers\listingScraper\gratka.db"
+DB_PATH = r"C:\Users\lukas\Documents\Car_Arbitrage\src\scrapers\listingScraper\kijiji.db"
 DEBUG_MODE = True  # toggle for manual review
 
 def process_titles():

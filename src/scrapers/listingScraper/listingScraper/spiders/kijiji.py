@@ -7,7 +7,7 @@ class KijijiSpider(scrapy.Spider):
     allowed_domains = ["kijiji.ca"]
     start_urls = [
         f"https://www.kijiji.ca/b-autos-camions/quebec/page-{i}/c174l9001?view=list"
-        for i in range(1, 3)  # scrape pages 1 to 5
+        for i in range(1, 474)  # scrape pages 1 to 5
     ]
 
     def parse(self, response):

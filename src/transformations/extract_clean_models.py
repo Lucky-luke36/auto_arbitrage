@@ -3,7 +3,7 @@ import re
 import unicodedata
 
 # connect to your kijiji.db
-conn = sqlite3.connect(r"..\scrapers\kijiji.db")
+conn = sqlite3.connect(r"src\scrapers\listingScraper\kijiji.db")
 cur = conn.cursor()
 
 # fetch distinct models

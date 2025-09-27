@@ -16,3 +16,7 @@ __pycache__/
 #Models
 *.pkl
 *.joblib
+
+#JS Node
+web/backend/node_modules/
+node_modules/

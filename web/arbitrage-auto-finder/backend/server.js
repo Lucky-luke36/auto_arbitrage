@@ -39,6 +39,7 @@ app.get("/api/kijiji-cars", (req, res) => {
   const query = `
     SELECT id, make, model, year, price, mileage
     FROM cars 
+    WHERE length(model) > 0 AND price > 3000
     ORDER BY price DESC
   `;
 
@@ -57,6 +58,7 @@ app.get("/api/polish-cars", (req, res) => {
   const query = `
     SELECT id, make, model, year, price, mileage
     FROM cars 
+    WHERE price > 3000
     ORDER BY price DESC
   `;
 

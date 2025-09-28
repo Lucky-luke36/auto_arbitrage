@@ -34,6 +34,12 @@ export default function KijijiCarsList({
   const [minMarginPct, setMinMarginPct] = useState<number | null>(null);
   const [minMatches, setMinMatches] = useState<number | null>(null);
 
+  const DEFAULT_SHIPPING = 15000;
+  const DEFAULT_VAT_PERCENT = 23;
+  const DEFAULT_EXCISE_RATE = 0.186; // default >2L
+  const CUSTOMS_RATE = 0.1; // 10%
+
+  // Memoized function to find matching Polish cars
   const getPolishMatches = useCallback(
     (car: KijijiCar) =>
       polishCars.filter(
@@ -47,21 +53,23 @@ export default function KijijiCarsList({
     [polishCars]
   );
 
-  const DEFAULT_SHIPPING = 15000;
-  const DEFAULT_CUSTOMS = 5000;
-
+  // Process cars with profitability calculation
   const processedCars = useMemo(() => {
     return cars
       .map((car) => {
         const matches = getPolishMatches(car);
-        const avgPolishPrice =
-          matches.length > 0
-            ? matches.reduce((sum, c) => sum + c.price, 0) / matches.length
-            : 0;
+        const avgPolishPrice = matches.length
+          ? matches.reduce((sum, c) => sum + c.price, 0) / matches.length
+          : 0;
 
         const kijijiPricePLN = car.price * CAD_TO_PLN_RATE;
-        const defaultVAT = Math.round((kijijiPricePLN + DEFAULT_SHIPPING) * 0.23);
-        const totalCosts = kijijiPricePLN + DEFAULT_SHIPPING + defaultVAT + DEFAULT_CUSTOMS;
+
+        // Customs, excise, VAT calculations
+        const customs = CUSTOMS_RATE * (kijijiPricePLN + DEFAULT_SHIPPING);
+        const excise = DEFAULT_EXCISE_RATE * kijijiPricePLN;
+        const vat = (DEFAULT_VAT_PERCENT / 100) * (kijijiPricePLN + DEFAULT_SHIPPING + customs + excise);
+
+        const totalCosts = kijijiPricePLN + DEFAULT_SHIPPING + customs + excise + vat;
         const profit = avgPolishPrice - totalCosts;
         const profitPercentage = avgPolishPrice > 0 ? (profit / avgPolishPrice) * 100 : 0;
 
@@ -81,8 +89,7 @@ export default function KijijiCarsList({
       .filter((car) => (minMarginPct !== null ? car.profitPercentage >= minMarginPct : true))
       .filter((car) => (minMatches !== null ? car.polishMatches >= minMatches : true))
       .sort((a, b) => {
-        let valA: number;
-        let valB: number;
+        let valA: number, valB: number;
         switch (sortField) {
           case "price":
             valA = a.price;
@@ -97,12 +104,11 @@ export default function KijijiCarsList({
             valA = a.profitPercentage;
             valB = b.profitPercentage;
         }
-        if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-        if (valA > valB) return sortOrder === "asc" ? 1 : -1;
-        return 0;
+        return sortOrder === "asc" ? valA - valB : valB - valA;
       });
   }, [
     cars,
+    getPolishMatches,
     hideZeroMatches,
     sortField,
     sortOrder,
@@ -112,7 +118,6 @@ export default function KijijiCarsList({
     maxPrice,
     minMarginPct,
     minMatches,
-    getPolishMatches,
   ]);
 
   return (
@@ -126,9 +131,7 @@ export default function KijijiCarsList({
               checked={hideZeroMatches}
               onCheckedChange={(checked) => setHideZeroMatches(!!checked)}
             />
-            <label htmlFor="hide-zero" className="cursor-pointer">
-              Hide 0 matches
-            </label>
+            <label htmlFor="hide-zero" className="cursor-pointer">Hide 0 matches</label>
           </div>
         </div>
 
@@ -136,9 +139,7 @@ export default function KijijiCarsList({
         <div className="flex gap-3 items-center text-sm">
           <Label className="text-xs">Sort by</Label>
           <Select value={sortField} onValueChange={(v: "price" | "margin" | "matches") => setSortField(v)}>
-            <SelectTrigger className="w-28 h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger className="w-28 h-8 text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="margin">Margin %</SelectItem>
               <SelectItem value="price">Price</SelectItem>
@@ -146,9 +147,7 @@ export default function KijijiCarsList({
             </SelectContent>
           </Select>
           <Select value={sortOrder} onValueChange={(v: "asc" | "desc") => setSortOrder(v)}>
-            <SelectTrigger className="w-20 h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger className="w-20 h-8 text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="asc">Asc</SelectItem>
               <SelectItem value="desc">Desc</SelectItem>
@@ -174,44 +173,24 @@ export default function KijijiCarsList({
             return (
               <div
                 key={car.id}
-                className={`p-3 cursor-pointer transition-colors hover:bg-muted/50 ${
-                  isSelected ? "bg-muted border-l-2 border-primary" : ""
-                }`}
+                className={`p-3 cursor-pointer transition-colors hover:bg-muted/50 ${isSelected ? "bg-muted border-l-2 border-primary" : ""}`}
                 onClick={() => onCarSelect(car)}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <div className="font-medium text-sm">
-                    {car.make} {car.model}
-                  </div>
+                  <div className="font-medium text-sm">{car.make} {car.model}</div>
                   <div className="flex gap-1">
-                    <Badge variant="secondary" className="text-xs">
-                      {car.polishMatches} matches
+                    <Badge variant="secondary" className="text-xs">{car.polishMatches} matches</Badge>
+                    <Badge className={`text-xs ${car.profit > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                      {car.profit > 0 ? "+" : ""}{car.profit.toLocaleString()} PLN
                     </Badge>
-                    <Badge
-                      className={`text-xs ${car.profit > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
-                    >
-                      {car.profit > 0 ? "+" : ""}
-                      {car.profit.toLocaleString()} PLN
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {car.profitPercentage.toFixed(1)}%
-                    </Badge>
+                    <Badge variant="outline" className="text-xs">{car.profitPercentage.toFixed(1)}%</Badge>
                     {car.link && (
-                      <Button
-                        asChild
-                        size="icon"
-                        variant="ghost"
-                        className="h-6 w-6 p-0"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <a href={car.link} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
+                      <Button asChild size="icon" variant="ghost" className="h-6 w-6 p-0" onClick={(e) => e.stopPropagation()}>
+                        <a href={car.link} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" /></a>
                       </Button>
                     )}
                   </div>
                 </div>
-
                 <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                   <div>Year: {car.year}</div>
                   <div>Price: ${car.price.toLocaleString()} CAD</div>

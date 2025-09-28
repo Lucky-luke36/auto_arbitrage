@@ -6,6 +6,7 @@ export interface KijijiCar {
   price: number;
   mileage: number;
   location: string;
+  link: string;
 }
 
 export interface PolishCar {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { KijijiCar, PolishCar, ProfitCalculation } from '@/types/car';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,8 +12,8 @@ interface ProfitabilityCalculatorProps {
 
 export default function ProfitabilityCalculator({ selectedCar, polishCars }: ProfitabilityCalculatorProps) {
   const [shipping, setShipping] = useState(15000);
-  const [vatPercent, setVatPercent] = useState(23);
-  const [isOver2L, setIsOver2L] = useState(true); // default: >2.0L (18.6%)
+  const [vatPercent, setVatPercent] = useState(23); // VAT as percentage
+  const [customs, setCustoms] = useState(5000);
 
   if (!selectedCar) {
     return (
@@ -25,7 +25,6 @@ export default function ProfitabilityCalculator({ selectedCar, polishCars }: Pro
     );
   }
 
-  // Match with similar Polish cars
   const matchingPolishCars = polishCars.filter(
     (car) =>
       car.make === selectedCar.make &&
@@ -38,29 +37,17 @@ export default function ProfitabilityCalculator({ selectedCar, polishCars }: Pro
     ? matchingPolishCars.reduce((sum, c) => sum + c.price, 0) / matchingPolishCars.length
     : 0;
 
-  // Convert Kijiji CAD → PLN
   const kijijiPricePLN = selectedCar.price * CAD_TO_PLN_RATE;
-
-  // Customs = 10% of (car + shipping)
-  const customs = 0.10 * (kijijiPricePLN + shipping);
-
-  // Excise = 3.1% if ≤2.0L, 18.6% if >2.0L
-  const exciseRate = isOver2L ? 0.186 : 0.031;
-  const excise = exciseRate * kijijiPricePLN;
-
-  // VAT = % of (car + shipping + customs + excise)
-  const vat = (vatPercent / 100) * (kijijiPricePLN + shipping + customs + excise);
-
-  const totalCosts = kijijiPricePLN + shipping + customs + excise + vat;
+  const vat = ((kijijiPricePLN + shipping) * vatPercent) / 100;
 
   const calculation: ProfitCalculation = {
     kijijiPricePLN,
     avgPolishPrice,
     shipping,
-    customs,
     vat,
-    totalCosts,
-    profit: avgPolishPrice - totalCosts,
+    customs,
+    totalCosts: kijijiPricePLN + shipping + vat + customs,
+    profit: avgPolishPrice - (kijijiPricePLN + shipping + vat + customs),
   };
 
   const profitPercentage = avgPolishPrice > 0 ? (calculation.profit / avgPolishPrice) * 100 : 0;
@@ -73,7 +60,6 @@ export default function ProfitabilityCalculator({ selectedCar, polishCars }: Pro
 
   return (
     <div className="space-y-6">
-      {/* Profit summary */}
       <Card className="border-2 border-primary/20">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
@@ -125,7 +111,6 @@ export default function ProfitabilityCalculator({ selectedCar, polishCars }: Pro
         </CardContent>
       </Card>
 
-      {/* Cost breakdown */}
       <Card>
         <CardHeader>
           <CardTitle>Cost Calculator</CardTitle>
@@ -133,7 +118,7 @@ export default function ProfitabilityCalculator({ selectedCar, polishCars }: Pro
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <h3 className="font-semibold">Inputs (PLN)</h3>
+              <h3 className="font-semibold">Additional Costs (PLN)</h3>
               <div className="space-y-3">
                 <div>
                   <Label htmlFor="shipping">Shipping</Label>
@@ -154,25 +139,13 @@ export default function ProfitabilityCalculator({ selectedCar, polishCars }: Pro
                   />
                 </div>
                 <div>
-                  <Label>Engine Size</Label>
-                  <div className="flex items-center gap-4 mt-1">
-                    <label className="flex items-center gap-1">
-                      <input
-                        type="radio"
-                        checked={!isOver2L}
-                        onChange={() => setIsOver2L(false)}
-                      />
-                      ≤ 2.0L (3.1%)
-                    </label>
-                    <label className="flex items-center gap-1">
-                      <input
-                        type="radio"
-                        checked={isOver2L}
-                        onChange={() => setIsOver2L(true)}
-                      />
-                      &gt; 2.0L (18.6%)
-                    </label>
-                  </div>
+                  <Label htmlFor="customs">Customs</Label>
+                  <Input
+                    id="customs"
+                    type="number"
+                    value={customs}
+                    onChange={(e) => setCustoms(Number(e.target.value))}
+                  />
                 </div>
               </div>
             </div>
@@ -193,16 +166,12 @@ export default function ProfitabilityCalculator({ selectedCar, polishCars }: Pro
                   {renderPLN(shipping)}
                 </div>
                 <div className="flex justify-between">
-                  <span>Customs (10%):</span>
-                  {renderPLN(customs)}
-                </div>
-                <div className="flex justify-between">
-                  <span>Excise ({(exciseRate * 100).toFixed(1)}%):</span>
-                  {renderPLN(excise)}
-                </div>
-                <div className="flex justify-between">
-                  <span>VAT ({vatPercent}%):</span>
+                  <span>VAT:</span>
                   {renderPLN(vat)}
+                </div>
+                <div className="flex justify-between">
+                  <span>Customs:</span>
+                  {renderPLN(customs)}
                 </div>
                 <div className="flex justify-between border-t pt-2 font-semibold">
                   <span>Total Costs:</span>

@@ -37,7 +37,7 @@ const polishDb = new sqlite3.Database(POLISH_DB_PATH, (err) => {
 // Get all Kijiji cars
 app.get("/api/kijiji-cars", (req, res) => {
   const query = `
-    SELECT id, make, model, year, price, mileage
+    SELECT id, make, model, year, price, mileage, link
     FROM cars 
     WHERE length(model) > 0 AND price > 3000
     ORDER BY price DESC
@@ -56,7 +56,7 @@ app.get("/api/kijiji-cars", (req, res) => {
 // Get all Polish cars
 app.get("/api/polish-cars", (req, res) => {
   const query = `
-    SELECT id, make, model, year, price, mileage
+    SELECT id, make, model, year, price, mileage, link
     FROM cars 
     WHERE price > 3000
     ORDER BY price DESC

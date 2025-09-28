@@ -68,7 +68,7 @@ export default function MarketAnalysisChart({ selectedCar, polishCars }: MarketA
               />
               <Tooltip 
                 formatter={(value, name) => [
-                  name === 'price' ? `${value.toLocaleString()} PLN` : `${value.toLocaleString()} km`,
+                  name === 'price' ? `${value.toLocaleString()}` : `${value.toLocaleString()}`,
                   name === 'price' ? 'Price' : 'Mileage'
                 ]}
                 labelFormatter={(label) => `${label}`}

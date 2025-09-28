@@ -6,8 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button"; // ✅ import Button
 import { CAD_TO_PLN_RATE } from "@/data/mockData";
 
 interface KijijiCarsListProps {
@@ -24,15 +23,14 @@ export default function KijijiCarsList({
   onCarSelect,
 }: KijijiCarsListProps) {
   const [hideZeroMatches, setHideZeroMatches] = useState(true);
-  const [sortField, setSortField] = useState<"price" | "margin" | "matches">("margin");
+  const [sortField, setSortField] = useState<"price" | "margin">("margin");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const [filterMake, setFilterMake] = useState("");
   const [filterModel, setFilterModel] = useState("");
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
-  const [minMarginPct, setMinMarginPct] = useState<number | null>(null);
-  const [minMatches, setMinMatches] = useState<number | null>(null);
+  const [minMargin, setMinMargin] = useState<number | null>(null);
 
   const getPolishMatches = useCallback(
     (car: KijijiCar) =>
@@ -78,25 +76,10 @@ export default function KijijiCarsList({
       .filter((car) => (filterModel ? car.model.toLowerCase().includes(filterModel.toLowerCase()) : true))
       .filter((car) => (minPrice !== null ? car.price >= minPrice : true))
       .filter((car) => (maxPrice !== null ? car.price <= maxPrice : true))
-      .filter((car) => (minMarginPct !== null ? car.profitPercentage >= minMarginPct : true))
-      .filter((car) => (minMatches !== null ? car.polishMatches >= minMatches : true))
+      .filter((car) => (minMargin !== null ? car.profit >= minMargin : true))
       .sort((a, b) => {
-        let valA: number;
-        let valB: number;
-        switch (sortField) {
-          case "price":
-            valA = a.price;
-            valB = b.price;
-            break;
-          case "matches":
-            valA = a.polishMatches;
-            valB = b.polishMatches;
-            break;
-          case "margin":
-          default:
-            valA = a.profitPercentage;
-            valB = b.profitPercentage;
-        }
+        const valA = sortField === "price" ? a.price : a.profit;
+        const valB = sortField === "price" ? b.price : b.profit;
         if (valA < valB) return sortOrder === "asc" ? -1 : 1;
         if (valA > valB) return sortOrder === "asc" ? 1 : -1;
         return 0;
@@ -110,8 +93,7 @@ export default function KijijiCarsList({
     filterModel,
     minPrice,
     maxPrice,
-    minMarginPct,
-    minMatches,
+    minMargin,
     getPolishMatches,
   ]);
 
@@ -119,8 +101,11 @@ export default function KijijiCarsList({
     <Card className="h-full flex flex-col">
       <CardHeader className="flex-shrink-0 flex flex-col gap-3">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-base font-medium">Canadian Kijiji Listings</CardTitle>
-          <div className="flex items-center gap-2 text-xs">
+          <CardTitle className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-kijiji-selected rounded-full"></div>
+            Canadian Kijiji Listings
+          </CardTitle>
+          <div className="flex items-center gap-2 text-sm">
             <Checkbox
               id="hide-zero"
               checked={hideZeroMatches}
@@ -132,21 +117,21 @@ export default function KijijiCarsList({
           </div>
         </div>
 
-        {/* Sorting */}
-        <div className="flex gap-3 items-center text-sm">
-          <Label className="text-xs">Sort by</Label>
-          <Select value={sortField} onValueChange={(v: "price" | "margin" | "matches") => setSortField(v)}>
-            <SelectTrigger className="w-28 h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="margin">Margin %</SelectItem>
-              <SelectItem value="price">Price</SelectItem>
-              <SelectItem value="matches">Matches</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex gap-4 items-center">
+          <div className="flex items-center gap-2">
+            <Label>Sort by</Label>
+            <Select value={sortField} onValueChange={(v: "price" | "margin") => setSortField(v)}>
+              <SelectTrigger className="w-28">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="margin">Margin</SelectItem>
+                <SelectItem value="price">Price</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Select value={sortOrder} onValueChange={(v: "asc" | "desc") => setSortOrder(v)}>
-            <SelectTrigger className="w-20 h-8 text-xs">
+            <SelectTrigger className="w-20">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -156,14 +141,12 @@ export default function KijijiCarsList({
           </Select>
         </div>
 
-        {/* Filters */}
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-2 text-xs">
-          <Input className="h-8 text-xs" placeholder="Make" value={filterMake} onChange={(e) => setFilterMake(e.target.value)} />
-          <Input className="h-8 text-xs" placeholder="Model" value={filterModel} onChange={(e) => setFilterModel(e.target.value)} />
-          <Input className="h-8 text-xs" type="number" placeholder="Min $" onChange={(e) => setMinPrice(Number(e.target.value) || null)} />
-          <Input className="h-8 text-xs" type="number" placeholder="Max $" onChange={(e) => setMaxPrice(Number(e.target.value) || null)} />
-          <Input className="h-8 text-xs" type="number" placeholder="Min Margin %" onChange={(e) => setMinMarginPct(Number(e.target.value) || null)} />
-          <Input className="h-8 text-xs" type="number" placeholder="Min Matches" onChange={(e) => setMinMatches(Number(e.target.value) || null)} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <Input placeholder="Make" value={filterMake} onChange={(e) => setFilterMake(e.target.value)} />
+          <Input placeholder="Model" value={filterModel} onChange={(e) => setFilterModel(e.target.value)} />
+          <Input type="number" placeholder="Min Price" onChange={(e) => setMinPrice(Number(e.target.value) || null)} />
+          <Input type="number" placeholder="Max Price" onChange={(e) => setMaxPrice(Number(e.target.value) || null)} />
+          <Input type="number" placeholder="Min Margin (PLN)" onChange={(e) => setMinMargin(Number(e.target.value) || null)} />
         </div>
       </CardHeader>
 
@@ -174,50 +157,59 @@ export default function KijijiCarsList({
             return (
               <div
                 key={car.id}
-                className={`p-3 cursor-pointer transition-colors hover:bg-muted/50 ${
-                  isSelected ? "bg-muted border-l-2 border-primary" : ""
+                className={`p-4 cursor-pointer transition-colors hover:bg-data-hover ${
+                  isSelected ? "bg-secondary border-l-4 border-l-kijiji-selected" : ""
                 }`}
                 onClick={() => onCarSelect(car)}
               >
-                <div className="flex justify-between items-start mb-1">
-                  <div className="font-medium text-sm">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="font-semibold text-foreground">
                     {car.make} {car.model}
                   </div>
-                  <div className="flex gap-1">
-                    <Badge variant="secondary" className="text-xs">
-                      {car.polishMatches} matches
+                  <div className="flex gap-2">
+                    <Badge variant={car.polishMatches > 0 ? "default" : "secondary"}>
+                      {car.polishMatches} Polish matches
                     </Badge>
                     <Badge
-                      className={`text-xs ${car.profit > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                      variant={car.profit > 0 ? "default" : "secondary"}
+                      className={car.profit > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}
                     >
                       {car.profit > 0 ? "+" : ""}
                       {car.profit.toLocaleString()} PLN
                     </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {car.profitPercentage.toFixed(1)}%
-                    </Badge>
-                    {car.link && (
-                      <Button
-                        asChild
-                        size="icon"
-                        variant="ghost"
-                        className="h-6 w-6 p-0"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <a href={car.link} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    )}
+                    <Badge variant="outline">{car.profitPercentage.toFixed(1)}%</Badge>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                  <div>Year: {car.year}</div>
-                  <div>Price: ${car.price.toLocaleString()} CAD</div>
-                  <div>Mileage: {car.mileage.toLocaleString()} km</div>
-                  <div>{car.location}</div>
+                <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+                  <div>
+                    <span className="font-medium">Year:</span> {car.year}
+                  </div>
+                  <div>
+                    <span className="font-medium">Price:</span> ${car.price.toLocaleString()} CAD
+                  </div>
+                  <div>
+                    <span className="font-medium">Mileage:</span> {car.mileage.toLocaleString()} km
+                  </div>
+                  <div className="text-xs">{car.location}</div>
                 </div>
+
+                {/* ✅ New Button to open original listing */}
+                {car.link && (
+                  <div className="mt-2">
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="outline"
+                      className="w-full"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <a href={car.link} target="_blank" rel="noopener noreferrer">
+                        View Original Listing
+                      </a>
+                    </Button>
+                  </div>
+                )}
               </div>
             );
           })}

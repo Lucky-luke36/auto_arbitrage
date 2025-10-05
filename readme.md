@@ -77,8 +77,6 @@ npm install
 npm run dev   # starts server with nodemon
 ```
 
-By default, it runs on [http://localhost:5000](http://localhost:5000).
-
 ### 4. Frontend Dashboard (React)
 
 ```bash
@@ -86,8 +84,6 @@ cd web/arbitrage-auto-finder
 npm install
 npm run dev
 ```
-
-By default, it runs on [http://localhost:5173](http://localhost:5173).
 
 ---
 

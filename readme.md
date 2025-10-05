@@ -128,6 +128,14 @@ npm run dev
 
 ---
 
+## 📊 Dashboard Preview
+
+Here’s what the arbitrage dashboard looks like:
+
+![Dashboard Screenshot](C:\Users\lukas\Documents\Car_Arbitrage\screencapture-localhost-8080-2025-10-05-17_08_01.png)
+
+---
+
 ## 🧑‍💻 Development Notes
 
 - The project frontend and API sevrer were initially bootstrapped with **Lovable.dev** (for quick Node.js + React prototyping), then customized manually.

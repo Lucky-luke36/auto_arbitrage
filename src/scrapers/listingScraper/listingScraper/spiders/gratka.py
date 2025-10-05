@@ -3,6 +3,14 @@ from datetime import datetime
 
 
 class GratkaSpider(scrapy.Spider):
+    """
+    
+    The following class scrapes car listings from Gratka.pl.
+    It extracts details such as title, price, mileage, year, fuel type, transmission,
+    and link to the listing.
+    
+    """
+    
     name = "gratka"
     allowed_domains = ["gratka.pl", "www.gratka.pl"]
     start_urls = [

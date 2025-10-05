@@ -3,6 +3,13 @@ from datetime import datetime
 
 
 class AutotraderplSpider(scrapy.Spider):
+
+    """
+    The following class scrapes car listings from Autotrader.pl.
+    It extracts details such as title, price, mileage, year, fuel type,
+    and link to the listing.
+    """
+    
     name = "autoTraderPL"
     allowed_domains = ["autotrader.pl", "www.autotrader.pl"]
     start_urls = [

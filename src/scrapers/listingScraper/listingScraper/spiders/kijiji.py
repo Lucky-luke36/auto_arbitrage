@@ -3,6 +3,11 @@ from datetime import datetime
 
 
 class KijijiSpider(scrapy.Spider):
+    """ 
+    The following class scrapes car listings from Kijiji.ca for Quebec region. 
+    It extracts details such as title, price, mileage, transmission, fuel type, and link to the listing.
+    """
+
     name = "kijiji"
     allowed_domains = ["kijiji.ca"]
     start_urls = [
@@ -11,12 +16,8 @@ class KijijiSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        #TODO: Add docstring
-        """sumary_line
-        
-        Keyword arguments:
-        argument -- description
-        Return: return_description
+        """
+        Parse the Kijiji car listings page and extract relevant data.
         """
         
         self.logger.info(f"Response status: {response.status}")

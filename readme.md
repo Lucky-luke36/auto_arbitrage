@@ -132,7 +132,7 @@ npm run dev
 
 Here’s what the arbitrage dashboard looks like:
 
-![Dashboard Screenshot](C:\Users\lukas\Documents\Car_Arbitrage\screencapture-localhost-8080-2025-10-05-17_08_01.png)
+![Dashboard Screenshot](./screencapture-localhost-8080-2025-10-05-17_08_01.png)
 
 ---
 
@@ -161,8 +161,4 @@ MIT – Free to use, modify, and distribute.
 - [SQLite](https://www.sqlite.org/) for being a great zero-config database
 - [Lovable.dev](https://lovable.dev/) for rapid full-stack prototyping
 
-```
-
 ---
-
-```

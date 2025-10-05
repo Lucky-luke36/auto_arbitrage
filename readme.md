@@ -1,4 +1,3 @@
-```markdown
 # 🚗 Car Arbitrage Finder
 
 This project is a **car arbitrage analysis tool** that helps identify profitable opportunities when buying used cars in **Quebec (Canada)** and selling them in **Poland**.
@@ -14,6 +13,7 @@ It automates the process by:
 ---
 
 ## 📂 Project Structure
+
 ```
 
 .
@@ -29,7 +29,7 @@ It automates the process by:
 │ └── frontend/ # React frontend dashboard
 ├── README.md
 
-````
+```
 
 ---
 
@@ -46,10 +46,11 @@ It automates the process by:
 ## ⚙️ Setup
 
 ### 1. Clone the repository
+
 ```bash
 git clone https://github.com/yourusername/car-arbitrage-finder.git
 cd car-arbitrage-finder
-````
+```
 
 ### 2. Scrapers (Python / Scrapy)
 

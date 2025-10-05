@@ -132,7 +132,7 @@ npm run dev
 
 Here’s what the arbitrage dashboard looks like:
 
-![Dashboard Screenshot](C:\Users\lukas\Documents\Car_Arbitrage\screencapture-localhost-8080-2025-10-05-17_08_01.png)
+![Dashboard Screenshot](./screencapture-localhost-8080-2025-10-05-17_08_01.png)
 
 ---
 
